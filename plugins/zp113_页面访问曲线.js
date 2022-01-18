@@ -2,7 +2,7 @@ const ARR = [1, 2, 3]
 
 function onInit({ container, exc, props }) {
     ARR.forEach(a => container.appendChild(document.createElement("div")))
-    exc('load("http://cdn.highcharts.com.cn/highcharts/highcharts.js")', null, () => {
+    exc('load("https://cdn.highcharts.com.cn/highcharts/highcharts.js")', null, () => {
         exc(`$traffic.page3("${props.page || ""}")`, null, R => {
             if (!R) return
             let x
