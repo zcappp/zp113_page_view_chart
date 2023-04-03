@@ -1,6 +1,6 @@
 const ARR = [1, 2, 3]
 
-function onInit({ container, exc, props }) {
+function init({ container, exc, props }) {
     ARR.forEach(a => container.appendChild(document.createElement("div")))
     exc('load("https://cdn.highcharts.com.cn/highcharts/highcharts.js")', null, () => {
         exc(`$traffic.page3("${props.page || ""}")`, null, R => {
@@ -55,7 +55,7 @@ $plugin({
         label: "页面路径",
         ph: "默认当前页面"
     }],
-    onInit
+    init
 })
 
 const dateTime = { "minute": "%H:%M", "hour": "%H:%M", "day": "%m月%d日" }
