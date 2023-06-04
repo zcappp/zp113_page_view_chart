@@ -2,7 +2,7 @@ const ARR = [1, 2, 3]
 
 function init({ container, exc, props }) {
     ARR.forEach(a => container.appendChild(document.createElement("div")))
-    exc('load("https://cdn.highcharts.com.cn/highcharts/highcharts.js")', null, () => {
+    exc('load("https://code.hcharts.cn/10.3.2/highcharts.js")', null, () => {
         exc(`$traffic.page3("${props.page || ""}")`, null, R => {
             if (!R) return
             let x
@@ -30,6 +30,7 @@ function init({ container, exc, props }) {
             chart = JSON.parse(JSON.stringify(chartOption))
             chart.title = { text: "最近3个月浏览量 (" + data.reduce((acc, x) => acc + x[1], 0).toLocaleString("en-US") + ")" }
             chart.series = [{ type: "area", name: "浏览量", data }]
+            log(chart)
             Highcharts.chart(container.children[1], chart)
 
             data = []
