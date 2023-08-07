@@ -2,7 +2,8 @@ const ARR = [1, 2, 3]
 
 function init({ container, exc, props }) {
     ARR.forEach(a => container.appendChild(document.createElement("div")))
-    exc('load("https://code.hcharts.cn/10.3.2/highcharts.js")', null, () => {
+    exc('load("https://z.zccdn.cn/vendor/highcharts/highcharts_11.1.js")', null, () => { // https://code.hcharts.cn/
+        Highcharts.setOptions({ global: { useUTC: false }, accessibility: { enabled: false } })
         exc(`$traffic.page3("${props.page || ""}")`, null, R => {
             if (!R) return
             let x
@@ -59,7 +60,7 @@ $plugin({
     init
 })
 
-const dateTime = { "minute": "%H:%M", "hour": "%H:%M", "day": "%m月%d日" }
+const dateTime = { "minute": "%H:%M", "hour": "%H:%M", "day": "%m-%d" }
 const chartOption = {
     xAxis: { type: "datetime", dateTimeLabelFormats: dateTime },
     yAxis: { title: "" },
