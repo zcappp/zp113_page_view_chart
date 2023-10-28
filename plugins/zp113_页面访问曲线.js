@@ -5,42 +5,54 @@ function init({ container, exc, props }) {
     exc('load("https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js")', null, () => { // https://code.hcharts.cn/
         exc(`$traffic.page3("${props.page || ""}")`, null, R => {
             if (!R) return
-            let x
-            let data = []
+            const opt = { title: { left: "center", text: "访问量" }, xAxis: { type: "category" }, yAxis: { type: "value" }, tooltip: { trigger: "axis" }, series: [{ type: "line", smooth: true }] }
+            let o = {}
+            let x, dates
             Object.keys(R.date).forEach(K => {
                 x = K.substr(0, 4) + "-" + K.substr(4, 2) + "-" + K.substr(-2) + " "
-                Object.keys(R.date[K]).forEach(k => data.push([x + k + ":00", R.date[K][k]]))
+                Object.keys(R.date[K]).forEach(k => o[x + k + ":00"] = R.date[K][k])
             })
-            data.sort((a, b) => b[0] - a[0])
-
-            const opt = { title: { left: "center", text: "访问量" }, xAxis: { type: "category" }, yAxis: { type: "value" }, tooltip: { trigger: "axis" }, series: [{ type: "line", smooth: true }] }
-            opt.title.text = "最近3天浏览量 (" + fm(data.reduce((acc, x) => acc + x[1], 0)) + ")"
-            opt.xAxis.data = data.map(a => a[0])
-            opt.series[0].data = data.map(a => a[1])
+            opt.title.text = "最近3天浏览量 (" + fm(Object.keys(o).reduce((acc, d) => acc + o[d], 0)) + ")"
+            dates = getDates(o, 3600000, "yyyy-MM-dd HH:mm")
+            opt.xAxis.data = dates
+            opt.series[0].data = dates.map(d => o[d] || 0)
             echarts.init(container.firstChild).setOption(opt)
             //
-            data = []
+            o = {}
             Object.keys(R.month).forEach(K => {
                 x = K.substr(0, 4) + "-" + K.substr(-2) + "-"
-                Object.keys(R.month[K]).forEach(k => data.push([x + k, R.month[K][k]]))
+                Object.keys(R.month[K]).forEach(k => o[x + k] = R.month[K][k])
             })
-            data.sort((a, b) => b[0] - a[0])
-            opt.title.text = "最近3个月浏览量 (" + fm(data.reduce((acc, x) => acc + x[1], 0)) + ")"
-            opt.xAxis.data = data.map(a => a[0])
-            opt.series[0].data = data.map(a => a[1])
+            opt.title.text = "最近3个月浏览量 (" + fm(Object.keys(o).reduce((acc, d) => acc + o[d], 0)) + ")"
+            dates = getDates(o, 86400000, "yyyy-MM-dd")
+            opt.xAxis.data = dates
+            opt.series[0].data = dates.map(d => o[d] || 0)
             echarts.init(container.children[1]).setOption(opt)
             //
-            data = []
+            o = {}
             Object.keys(R.year).forEach(K => {
-                Object.keys(R.year[K]).forEach(k => data.push([K + "-" + k, R.year[K][k]]))
+                Object.keys(R.year[K]).forEach(k => o[K + "-" + k] = R.year[K][k])
             })
-            data.sort((a, b) => b[0] - a[0])
-            opt.title.text = "各月浏览量 (" + fm(data.reduce((acc, x) => acc + x[1], 0)) + ")"
-            opt.xAxis.data = data.map(a => a[0])
-            opt.series[0].data = data.map(a => a[1])
+            opt.title.text = "各月浏览量 (" + fm(Object.keys(o).reduce((acc, d) => acc + o[d], 0)) + ")"
+            dates = getDates(o, 86400000 * 31, "yyyy-MM")
+            opt.xAxis.data = dates
+            opt.series[0].data = dates.map(d => o[d] || 0)
             echarts.init(container.lastChild).setOption(opt)
         })
     })
+}
+
+function getDates(o, time, fmt) {
+    let arr = Object.keys(o).sort()
+    let max = new Date(arr[arr.length - 1]).getTime()
+    let cur = new Date(arr[0]).getTime()
+    let dates = [arr[0]]
+    while (cur < max) {
+        cur = new Date(cur + time)
+        dates.push(cur.format(fmt))
+        cur = cur.getTime()
+    }
+    return dates
 }
 
 function fm(n) {
